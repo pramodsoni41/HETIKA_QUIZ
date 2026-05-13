@@ -1,0 +1,222 @@
+[
+  {
+    "question": "What is the capital of Australia?",
+    "answers": [
+      "Sydney",
+      "Melbourne",
+      "Canberra",
+      "Perth"
+    ],
+    "correctAnswer": 2,
+    "time": 40
+  },
+  {
+    "question": "Who wrote the Indian national anthem?",
+    "answers": [
+      "Rabindranath Tagore",
+      "Bankim Chandra Chattopadhyay",
+      "Sarojini Naidu",
+      "Subhas Chandra Bose"
+    ],
+    "correctAnswer": 0,
+    "time": 40
+  },
+  {
+    "question": "Which planet is known as the Red Planet?",
+    "answers": [
+      "Venus",
+      "Mars",
+      "Jupiter",
+      "Saturn"
+    ],
+    "correctAnswer": 1,
+    "time": 40
+  },
+  {
+    "question": "Who is known as the Father of the Indian Constitution?",
+    "answers": [
+      "Mahatma Gandhi",
+      "Jawaharlal Nehru",
+      "B. R. Ambedkar",
+      "Sardar Patel"
+    ],
+    "correctAnswer": 2,
+    "time": 45
+  },
+  {
+    "question": "Which is the largest ocean on Earth?",
+    "answers": [
+      "Atlantic Ocean",
+      "Indian Ocean",
+      "Arctic Ocean",
+      "Pacific Ocean"
+    ],
+    "correctAnswer": 3,
+    "time": 40
+  },
+  {
+    "question": "What is the national animal of India?",
+    "answers": [
+      "Tiger",
+      "Lion",
+      "Elephant",
+      "Leopard"
+    ],
+    "correctAnswer": 0,
+    "time": 35
+  },
+  {
+    "question": "Which gas is most abundant in the Earth's atmosphere?",
+    "answers": [
+      "Oxygen",
+      "Carbon dioxide",
+      "Nitrogen",
+      "Hydrogen"
+    ],
+    "correctAnswer": 2,
+    "time": 40
+  },
+  {
+    "question": "Who was the first President of India?",
+    "answers": [
+      "Rajendra Prasad",
+      "S. Radhakrishnan",
+      "Zakir Husain",
+      "V. V. Giri"
+    ],
+    "correctAnswer": 0,
+    "time": 45
+  },
+  {
+    "question": "Which river is known as the longest river in the world?",
+    "answers": [
+      "Amazon",
+      "Nile",
+      "Yangtze",
+      "Mississippi"
+    ],
+    "correctAnswer": 1,
+    "time": 40
+  },
+  {
+    "question": "How many players are there in a cricket team?",
+    "answers": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "correctAnswer": 2,
+    "time": 30
+  },
+  {
+    "question": "Which country is known as the Land of the Rising Sun?",
+    "answers": [
+      "China",
+      "Japan",
+      "Thailand",
+      "South Korea"
+    ],
+    "correctAnswer": 1,
+    "time": 35
+  },
+  {
+    "question": "What is the currency of the United Kingdom?",
+    "answers": [
+      "Dollar",
+      "Euro",
+      "Pound Sterling",
+      "Yen"
+    ],
+    "correctAnswer": 2,
+    "time": 35
+  },
+  {
+    "question": "Who discovered gravity after observing a falling apple?",
+    "answers": [
+      "Albert Einstein",
+      "Isaac Newton",
+      "Galileo Galilei",
+      "Nikola Tesla"
+    ],
+    "correctAnswer": 1,
+    "time": 40
+  },
+  {
+    "question": "Which is the smallest prime number?",
+    "answers": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "correctAnswer": 2,
+    "time": 30
+  },
+  {
+    "question": "In which year did India gain independence?",
+    "answers": [
+      "1945",
+      "1946",
+      "1947",
+      "1950"
+    ],
+    "correctAnswer": 2,
+    "time": 45
+  },
+  {
+    "question": "Which organ purifies blood in the human body?",
+    "answers": [
+      "Heart",
+      "Liver",
+      "Kidney",
+      "Lungs"
+    ],
+    "correctAnswer": 2,
+    "time": 40
+  },
+  {
+    "question": "Which is the tallest mountain in the world?",
+    "answers": [
+      "K2",
+      "Kangchenjunga",
+      "Mount Everest",
+      "Annapurna"
+    ],
+    "correctAnswer": 2,
+    "time": 40
+  },
+  {
+    "question": "Who invented the telephone?",
+    "answers": [
+      "Thomas Edison",
+      "Alexander Graham Bell",
+      "James Watt",
+      "Michael Faraday"
+    ],
+    "correctAnswer": 1,
+    "time": 40
+  },
+  {
+    "question": "What is the chemical symbol for gold?",
+    "answers": [
+      "Ag",
+      "Au",
+      "Go",
+      "Gd"
+    ],
+    "correctAnswer": 1,
+    "time": 35
+  },
+  {
+    "question": "Which festival is known as the festival of lights?",
+    "answers": [
+      "Holi",
+      "Diwali",
+      "Eid",
+      "Christmas"
+    ],
+    "correctAnswer": 1,
+    "time": 30
+  }
+]

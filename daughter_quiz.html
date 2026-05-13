@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f4ff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: #3b3b8f;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+    margin-top: 14px;
+  }
+
+  select, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #d0d5e8;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #fff;
+  }
+
+  select:focus, input:focus { border-color: #5c6bc0; }
+  select:disabled { background: #f5f5f5; color: #aaa; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    padding: 12px;
+    background: #5c6bc0;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #3949ab; }
+  .btn:disabled { background: #b0bec5; cursor: default; }
+
+  /* Quiz */
+  .progress-bar {
+    background: #e8eaf6;
+    border-radius: 99px;
+    height: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #5c6bc0;
+    border-radius: 99px;
+    transition: width 0.3s;
+  }
+
+  .q-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .q-counter { font-size: 0.82rem; color: #888; }
+
+  .timer {
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: #e8eaf6;
+    color: #5c6bc0;
+    min-width: 48px;
+    text-align: center;
+    transition: background 0.3s, color 0.3s;
+  }
+  .timer.warn  { background: #fff3e0; color: #e65100; }
+  .timer.urgent { background: #ffebee; color: #c62828; }
+
+  .question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #222;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border: 1.5px solid #d0d5e8;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 0.95rem;
+    color: #333;
+    user-select: none;
+  }
+  .option:hover { border-color: #5c6bc0; background: #f0f4ff; }
+  .option.selected { border-color: #5c6bc0; background: #e8eaf6; font-weight: 600; }
+  .option.correct  { border-color: #43a047; background: #e8f5e9; }
+  .option.wrong    { border-color: #e53935; background: #ffebee; }
+
+  .option-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: #5c6bc0;
+  }
+  .option.selected .option-letter { background: #5c6bc0; color: #fff; }
+  .option.correct  .option-letter { background: #43a047; color: #fff; }
+  .option.wrong    .option-letter { background: #e53935; color: #fff; }
+
+  .nav { display: flex; gap: 10px; margin-top: 22px; }
+  .nav .btn { margin-top: 0; }
+  .btn-outline {
+    background: transparent;
+    color: #5c6bc0;
+    border: 1.5px solid #5c6bc0;
+  }
+  .btn-outline:hover { background: #f0f4ff; }
+
+  /* Results */
+  .score-circle {
+    width: 110px; height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #5c6bc0, #7986cb);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    color: #fff;
+  }
+  .score-circle .big { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .score-circle .small { font-size: 0.75rem; opacity: 0.9; }
+
+  .stats { display: flex; justify-content: space-around; margin-bottom: 20px; }
+  .stat { text-align: center; }
+  .stat .val { font-size: 1.4rem; font-weight: 700; }
+  .stat .lbl { font-size: 0.75rem; color: #888; }
+  .stat.correct .val { color: #43a047; }
+  .stat.wrong   .val { color: #e53935; }
+  .stat.skip    .val { color: #fb8c00; }
+
+  .review-list { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+  .review-item {
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+  .review-item.c { background: #e8f5e9; border-left: 3px solid #43a047; }
+  .review-item.w { background: #ffebee; border-left: 3px solid #e53935; }
+  .review-item.s { background: #fff8e1; border-left: 3px solid #fb8c00; }
+
+  .review-q {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-weight: 600; margin-bottom: 6px; color: #222;
+  }
+  .review-icon { flex-shrink: 0; }
+
+  .review-options { display: flex; flex-direction: column; gap: 3px; padding-left: 4px; }
+  .review-opt {
+    display: flex; align-items: center; gap: 7px;
+    padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; color: #444;
+  }
+  .review-opt.opt-correct { background: #c8e6c9; color: #1b5e20; font-weight: 700; }
+  .review-opt.opt-wrong   { background: #ffcdd2; color: #b71c1c; font-weight: 600; text-decoration: line-through; }
+  .review-opt .opt-badge  {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #e0e0e0; display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0; color: #555;
+  }
+  .review-opt.opt-correct .opt-badge { background: #43a047; color: #fff; }
+  .review-opt.opt-wrong   .opt-badge { background: #e53935; color: #fff; }
+
+  .msg { text-align: center; color: #888; padding: 12px 0; font-size: 0.9rem; }
+  .error-msg { color: #e53935; text-align: center; font-size: 0.88rem; margin-top: 10px; }
+
+  #screen-setup, #screen-name, #screen-quiz, #screen-result { display: none; }
+</style>
+</head>
+<body>
+
+<div class="card" id="card">
+
+  <!-- SCREEN 1: Category Selection -->
+  <div id="screen-setup">
+    <h1>Quiz Setup</h1>
+    <div class="msg" id="loading-msg">Loading categories…</div>
+
+    <div id="setup-form" style="display:none">
+      <label>Class</label>
+      <select id="sel-class">
+        <option value="">— select class —</option>
+      </select>
+
+      <label>Subject</label>
+      <select id="sel-subject" disabled>
+        <option value="">— select subject —</option>
+      </select>
+
+      <label>Topic</label>
+      <select id="sel-topic" disabled>
+        <option value="">— select topic —</option>
+      </select>
+
+      <label>Number of Questions</label>
+      <input type="number" id="inp-count" min="1" max="50" value="10">
+
+      <button class="btn" id="btn-setup-next" disabled>Next →</button>
+    </div>
+    <div class="error-msg" id="setup-err"></div>
+  </div>
+
+  <!-- SCREEN 2: Name Entry -->
+  <div id="screen-name">
+    <h1>What's your name?</h1>
+    <label>Name</label>
+    <input type="text" id="inp-name" placeholder="Enter your name" autocomplete="off">
+    <label>Password</label>
+    <input type="password" id="inp-password" placeholder="Enter quiz password" autocomplete="off">
+    <button class="btn" id="btn-start">Start Quiz</button>
+    <div class="error-msg" id="name-err"></div>
+  </div>
+
+  <!-- SCREEN 3: Quiz -->
+  <div id="screen-quiz">
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="q-top">
+      <div class="q-counter" id="q-counter"></div>
+      <div class="timer" id="q-timer">–</div>
+    </div>
+    <div class="question" id="q-text"></div>
+    <div class="options" id="q-options"></div>
+    <div class="nav">
+      <button class="btn btn-outline" id="btn-prev">← Prev</button>
+      <button class="btn" id="btn-next">Next →</button>
+    </div>
+    <button class="btn btn-outline" id="btn-finish" style="margin-top:10px;font-size:0.88rem;color:#e53935;border-color:#e53935;">Finish Quiz</button>
+  </div>
+
+  <!-- SCREEN 4: Results -->
+  <div id="screen-result">
+    <h1 id="result-title">Result</h1>
+    <div class="score-circle">
+      <span class="big" id="res-percent">0%</span>
+      <span class="small" id="res-fraction"></span>
+    </div>
+    <div class="stats">
+      <div class="stat correct"><div class="val" id="res-correct">0</div><div class="lbl">Correct</div></div>
+      <div class="stat wrong">  <div class="val" id="res-wrong">0</div>  <div class="lbl">Wrong</div></div>
+      <div class="stat skip">  <div class="val" id="res-skip">0</div>   <div class="lbl">Skipped</div></div>
+    </div>
+    <div class="review-list" id="review-list"></div>
+    <button class="btn" id="btn-restart" style="margin-top:20px">Try Again</button>
+  </div>
+
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbycodKGYaMZPd4TNSnRI2pPCCGFZ_nSPwXrB_cXnAqJTkPTyh_BtzzBi18oDk0kgiI/exec";
+
+let state = {
+  categories: {},
+  config: {},
+  className: "", subject: "", topic: "", count: 10,
+  name: "",
+  token: "",
+  questions: [],
+  responses: [],   // -1 = skipped, 0-3 = selected index
+  current: 0
+};
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+function show(id) {
+  ["screen-setup","screen-name","screen-quiz","screen-result"].forEach(function(s) {
+    document.getElementById(s).style.display = s === id ? "block" : "none";
+  });
+}
+
+async function init() {
+  show("screen-setup");
+  try {
+    const res = await get();
+    if (res.status !== "ok") throw new Error(res.message || "Failed to load");
+
+    state.config     = res.config || {};
+    state.categories = res.categories || {};
+
+    // Show quiz name
+    document.querySelector("#screen-setup h1").textContent =
+      state.config.quizName || "Quiz Setup";
+
+    // Check if quiz is open
+    if (state.config.status && state.config.status !== "OPEN") {
+      document.getElementById("loading-msg").textContent =
+        state.config.status === "CLOSED" ? "Quiz is currently closed." : "Quiz deadline has passed.";
+      return;
+    }
+
+    populateClasses();
+    document.getElementById("loading-msg").style.display = "none";
+    document.getElementById("setup-form").style.display = "block";
+  } catch (err) {
+    document.getElementById("loading-msg").textContent = "Error: " + err.message;
+  }
+}
+
+// ── Setup screen ──────────────────────────────────────────────────────────────
+function populateClasses() {
+  const sel = document.getElementById("sel-class");
+  sel.innerHTML = '<option value="">— select class —</option>';
+  Object.keys(state.categories).sort(function(a,b){ return Number(a)-Number(b); }).forEach(function(c) {
+    sel.innerHTML += '<option value="' + c + '">Class ' + c + '</option>';
+  });
+}
+
+document.getElementById("sel-class").addEventListener("change", function() {
+  const cls = this.value;
+  const subjSel = document.getElementById("sel-subject");
+  const topicSel = document.getElementById("sel-topic");
+
+  subjSel.innerHTML = '<option value="">— select subject —</option>';
+  topicSel.innerHTML = '<option value="">— select topic —</option>';
+  topicSel.disabled = true;
+
+  if (!cls) { subjSel.disabled = true; checkSetupReady(); return; }
+
+  Object.keys(state.categories[cls] || {}).sort().forEach(function(s) {
+    subjSel.innerHTML += '<option value="' + s + '">' + s + '</option>';
+  });
+  subjSel.disabled = false;
+  checkSetupReady();
+});
+
+document.getElementById("sel-subject").addEventListener("change", function() {
+  const cls = document.getElementById("sel-class").value;
+  const subj = this.value;
+  const topicSel = document.getElementById("sel-topic");
+
+  topicSel.innerHTML = '<option value="">— select topic —</option>';
+
+  if (!subj) { topicSel.disabled = true; checkSetupReady(); return; }
+
+  (state.categories[cls][subj] || []).slice().sort().forEach(function(t) {
+    topicSel.innerHTML += '<option value="' + t + '">' + t + '</option>';
+  });
+  topicSel.disabled = false;
+  checkSetupReady();
+});
+
+document.getElementById("sel-topic").addEventListener("change", checkSetupReady);
+document.getElementById("inp-count").addEventListener("input", checkSetupReady);
+
+function checkSetupReady() {
+  const ok = document.getElementById("sel-class").value &&
+             document.getElementById("sel-subject").value &&
+             document.getElementById("sel-topic").value &&
+             Number(document.getElementById("inp-count").value) >= 1;
+  document.getElementById("btn-setup-next").disabled = !ok;
+}
+
+document.getElementById("btn-setup-next").addEventListener("click", function() {
+  state.className = document.getElementById("sel-class").value;
+  state.subject   = document.getElementById("sel-subject").value;
+  state.topic     = document.getElementById("sel-topic").value;
+  state.count     = Number(document.getElementById("inp-count").value) || 10;
+  document.getElementById("inp-name").value     = "";
+  document.getElementById("inp-password").value = "";
+  show("screen-name");
+  document.getElementById("inp-name").focus();
+});
+
+// ── Name screen ───────────────────────────────────────────────────────────────
+document.getElementById("inp-name").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") document.getElementById("btn-start").click();
+});
+
+document.getElementById("btn-start").addEventListener("click", async function() {
+  const name     = document.getElementById("inp-name").value.trim();
+  const password = document.getElementById("inp-password").value.trim();
+  if (!name)     { document.getElementById("name-err").textContent = "Please enter your name."; return; }
+  if (!password) { document.getElementById("name-err").textContent = "Please enter the password."; return; }
+  document.getElementById("name-err").textContent = "";
+  document.getElementById("btn-start").disabled = true;
+  document.getElementById("btn-start").textContent = "Loading…";
+
+  try {
+    const res = await post({
+      action:    "startQuiz",
+      className: state.className,
+      subject:   state.subject,
+      topic:     state.topic,
+      count:     state.count,
+      name:      name,
+      password:  password
+    });
+
+    if (res.status === "closed")        throw new Error("Quiz is currently closed.");
+    if (res.status === "expired")       throw new Error("Quiz deadline has passed.");
+    if (res.status === "wrongPassword") throw new Error("Incorrect password. Please try again.");
+    if (res.status !== "ok")            throw new Error(res.message || "Failed to start");
+
+    state.name      = name;
+    state.token     = res.token;
+    state.questions = res.questions;
+    state.responses = new Array(res.questions.length).fill(-1);
+    state.current   = 0;
+
+    renderQuestion();
+    show("screen-quiz");
+  } catch (err) {
+    document.getElementById("name-err").textContent = "Error: " + err.message;
+  } finally {
+    document.getElementById("btn-start").disabled = false;
+    document.getElementById("btn-start").textContent = "Start Quiz";
+  }
+});
+
+// ── Quiz screen ───────────────────────────────────────────────────────────────
+const LETTERS = ["A", "B", "C", "D"];
+let timerInterval = null;
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function startTimer(seconds) {
+  stopTimer();
+  const el = document.getElementById("q-timer");
+  let remaining = seconds;
+
+  function tick() {
+    el.textContent = remaining + "s";
+    el.className = "timer" +
+      (remaining <= 5 ? " urgent" : remaining <= 10 ? " warn" : "");
+    if (remaining <= 0) {
+      stopTimer();
+      // auto-advance: skip if unanswered, next question
+      const i = state.current;
+      const isLast = i === state.questions.length - 1;
+      if (isLast) {
+        document.getElementById("btn-next").click();
+      } else {
+        state.current++;
+        renderQuestion();
+      }
+    }
+    remaining--;
+  }
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+function renderQuestion() {
+  const i = state.current;
+  const q = state.questions[i];
+  const total = state.questions.length;
+
+  document.getElementById("progress").style.width = ((i / total) * 100) + "%";
+  document.getElementById("q-counter").textContent = "Question " + (i + 1) + " of " + total;
+  document.getElementById("q-text").textContent = q.question;
+
+  const opts = document.getElementById("q-options");
+  opts.innerHTML = "";
+  q.options.forEach(function(opt, idx) {
+    if (!opt) return;
+    const div = document.createElement("div");
+    div.className = "option" + (state.responses[i] === idx ? " selected" : "");
+    div.innerHTML =
+      '<div class="option-letter">' + LETTERS[idx] + '</div>' +
+      '<span>' + esc(opt) + '</span>';
+    div.addEventListener("click", function() {
+      state.responses[i] = idx;
+      renderQuestion();
+    });
+    opts.appendChild(div);
+  });
+
+  document.getElementById("btn-prev").style.visibility = i === 0 ? "hidden" : "visible";
+  const isLast = i === total - 1;
+  document.getElementById("btn-next").textContent = isLast ? "Submit" : "Next →";
+
+  // start per-question countdown
+  startTimer(q.time || 30);
+}
+
+document.getElementById("btn-prev").addEventListener("click", function() {
+  if (state.current > 0) { stopTimer(); state.current--; renderQuestion(); }
+});
+
+async function submitQuiz() {
+  stopTimer();
+  const unanswered = state.responses.filter(function(r) { return r === -1; }).length;
+  if (unanswered > 0) {
+    if (!confirm(unanswered + " question(s) unanswered. Submit anyway?")) {
+      // restart timer for current question if user cancels
+      startTimer(state.questions[state.current].time || 30);
+      return false;
+    }
+  }
+  return true;
+}
+
+document.getElementById("btn-finish").addEventListener("click", async function() {
+  if (!await submitQuiz()) return;
+  document.getElementById("btn-next").textContent = "Submitting…";
+  document.getElementById("btn-next").disabled = true;
+  document.getElementById("btn-finish").disabled = true;
+  try {
+    const res = await post({ action: "submitQuiz", token: state.token, responses: state.responses });
+    if (res.status === "expired") { alert("Session expired. Please start again."); init(); return; }
+    if (res.status !== "submitted") throw new Error(res.message || "Submit failed");
+    showResults(res);
+  } catch (err) {
+    alert("Error: " + err.message);
+  } finally {
+    document.getElementById("btn-next").disabled = false;
+    document.getElementById("btn-finish").disabled = false;
+    document.getElementById("btn-next").textContent = "Submit";
+  }
+});
+
+document.getElementById("btn-next").addEventListener("click", async function() {
+  const isLast = state.current === state.questions.length - 1;
+  if (!isLast) { stopTimer(); state.current++; renderQuestion(); return; }
+
+  if (!await submitQuiz()) return;
+
+  this.disabled = true;
+  document.getElementById("btn-finish").disabled = true;
+  this.textContent = "Submitting…";
+
+  try {
+    const res = await post({ action: "submitQuiz", token: state.token, responses: state.responses });
+    if (res.status === "expired") { alert("Session expired. Please start again."); init(); return; }
+    if (res.status !== "submitted") throw new Error(res.message || "Submit failed");
+    showResults(res);
+  } catch (err) {
+    alert("Error: " + err.message);
+    startTimer(state.questions[state.current].time || 30);
+  } finally {
+    this.disabled = false;
+    document.getElementById("btn-finish").disabled = false;
+    this.textContent = "Submit";
+  }
+});
+
+// ── Results screen ────────────────────────────────────────────────────────────
+function showResults(res) {
+  document.getElementById("result-title").textContent = "Well done, " + res.name + "!";
+  document.getElementById("res-percent").textContent  = res.percentage + "%";
+  document.getElementById("res-fraction").textContent = res.marks + " / " + res.maxMarks + " marks";
+  document.getElementById("res-correct").textContent  = res.correct;
+  document.getElementById("res-wrong").textContent    = res.incorrect;
+  document.getElementById("res-skip").textContent     = res.skipped;
+
+  const list = document.getElementById("review-list");
+  list.innerHTML = "";
+
+  res.review.forEach(function(r, i) {
+    const q   = state.questions[i];
+    const sel = state.responses[i];
+
+    const itemCls = r.isCorrect === null ? "s" : r.isCorrect ? "c" : "w";
+    const icon    = r.isCorrect === null ? "—" : r.isCorrect ? "✓" : "✗";
+
+    let optionsHtml = '<div class="review-options">';
+    q.options.forEach(function(opt, idx) {
+      const isCorrect = idx === r.correctIdx;
+      const isChosen  = idx === sel;
+      let optCls = "";
+      if (isCorrect) optCls = "opt-correct";
+      else if (isChosen && !isCorrect) optCls = "opt-wrong";
+
+      const suffix = isCorrect && isChosen ? " ✓ your answer"
+                   : isCorrect             ? " ← correct"
+                   : isChosen             ? " ✗ your answer"
+                   : "";
+
+      optionsHtml +=
+        '<div class="review-opt ' + optCls + '">' +
+          '<div class="opt-badge">' + LETTERS[idx] + '</div>' +
+          esc(opt) + '<span style="font-size:0.78rem;margin-left:4px;opacity:0.8">' + suffix + '</span>' +
+        '</div>';
+    });
+    optionsHtml += '</div>';
+
+    list.innerHTML +=
+      '<div class="review-item ' + itemCls + '">' +
+        '<div class="review-q"><span class="review-icon">' + icon + '</span>' +
+          '<span><strong>Q' + (i + 1) + '.</strong> ' + esc(q.question) + '</span>' +
+        '</div>' +
+        optionsHtml +
+      '</div>';
+  });
+
+  show("screen-result");
+}
+
+document.getElementById("btn-restart").addEventListener("click", init);
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+async function get() {
+  const res = await fetch(API);
+  return res.json();
+}
+
+async function post(data) {
+  const res = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+// Start
+init();
+</script>
+</body>
+</html>

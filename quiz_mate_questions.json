@@ -1,0 +1,79 @@
+[
+  {
+    "question": "The coefficient of contraction (Cc) in terms of areas at the vena contracta (ac) and exit (a) is",
+    "answers": [
+      "Cc = a/ac",
+      "Cc = a × ac",
+      "Cc = ac/a",
+      "None of the above"
+    ],
+    "correctAnswer": 2,
+    "time": 40
+  },
+  {
+    "question": "The average value of coefficient of velocity is",
+    "answers": [
+      "0.9",
+      "0.8",
+      "0.98",
+      "0.63"
+    ],
+    "correctAnswer": 2,
+    "time": 50
+  },
+  {
+    "question": "The average value of coefficient of discharge for small sharp-edged orifice varies between",
+    "answers": [
+      "0.9 to 0.98",
+      "0.8 to 0.88",
+      "0.62 to 0.65",
+      "1 to 1.2"
+    ],
+    "correctAnswer": 2,
+    "time": 15
+  },
+  {
+    "question": "The Borda’s mouthpiece is said to be running free if its length is",
+    "answers": [
+      "Less than 3 times of its diameter",
+      "Equals its diameter",
+      "More than double its length",
+      "None of the above"
+    ],
+    "correctAnswer": 1,
+    "time": 24
+  },
+  {
+    "question": "Which of the following mouthpiece has maximum coefficient of discharge?",
+    "answers": [
+      "Convergent-divergent",
+      "External",
+      "Internal",
+      "None of the above"
+    ],
+    "correctAnswer": 0,
+    "time": 15
+  },
+  {
+    "question": "For a Borda’s mouthpiece running full, the value of coefficient of discharge is equal to",
+    "answers": [
+      "0.507",
+      "0.607",
+      "0.707",
+      "0.807"
+    ],
+    "correctAnswer": 2,
+    "time": 15
+  },
+  {
+    "question": "A mouthpiece cannot be used under very large heads due to",
+    "answers": [
+      "Cavitation at vena contracta",
+      "Small coefficient of discharge",
+      "Uneconomical operation and short life",
+      "None of the above"
+    ],
+    "correctAnswer": 0,
+    "time": 15
+  }
+]
