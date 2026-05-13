@@ -7,7 +7,7 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body { 
+  body {
     font-family: 'Segoe UI', sans-serif;
     background: #f0f4ff;
     min-height: 100vh;
@@ -602,9 +602,10 @@ function showResults(res) {
     const icon    = r.isCorrect === null ? "—" : r.isCorrect ? "✓" : "✗";
 
     let optionsHtml = '<div class="review-options">';
+    const skipped = r.isCorrect === null;
     q.options.forEach(function(opt, idx) {
-      const isCorrect = idx === r.correctIdx;
-      const isChosen  = idx === sel;
+      const isCorrect = !skipped && idx === r.correctIdx;
+      const isChosen  = !skipped && idx === sel;
       let optCls = "";
       if (isCorrect) optCls = "opt-correct";
       else if (isChosen && !isCorrect) optCls = "opt-wrong";
