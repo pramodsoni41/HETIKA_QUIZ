@@ -646,16 +646,29 @@ function esc(str) {
 }
 
 async function get() {
-  const res = await fetch(API);
-  return res.json();
+  const res  = await fetch(API);
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+      throw new Error("Server returned a login/error page. Check GAS deployment: set access to 'Anyone'.");
+    }
+    throw new Error("Invalid response from server.");
+  }
 }
 
 async function post(data) {
-  const res = await fetch(API, {
-    method: "POST",
-    body: JSON.stringify(data)
-  });
-  return res.json();
+  const res  = await fetch(API, { method: "POST", body: JSON.stringify(data) });
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+      throw new Error("Server returned a login/error page. Check GAS deployment: set access to 'Anyone'.");
+    }
+    throw new Error("Invalid response from server.");
+  }
 }
 
 // Start
