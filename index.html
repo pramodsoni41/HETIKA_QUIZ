@@ -401,10 +401,15 @@ document.getElementById("btn-setup-next").addEventListener("click", function() {
   state.subject   = document.getElementById("sel-subject").value;
   state.topic     = document.getElementById("sel-topic").value;
   state.count     = Number(document.getElementById("inp-count").value) || 10;
-  document.getElementById("inp-name").value     = "";
-  document.getElementById("inp-password").value = "";
+
+  // Restore saved name/password if within 1 hour
+  const saved   = JSON.parse(localStorage.getItem("dq_creds") || "{}");
+  const expired = !saved.expiry || Date.now() > saved.expiry;
+  document.getElementById("inp-name").value     = expired ? "" : (saved.name     || "");
+  document.getElementById("inp-password").value = expired ? "" : (saved.password || "");
+
   show("screen-name");
-  document.getElementById("inp-name").focus();
+  document.getElementById(expired || !saved.name ? "inp-name" : "inp-password").focus();
 });
 
 // ── Name screen ───────────────────────────────────────────────────────────────
@@ -436,6 +441,11 @@ document.getElementById("btn-start").addEventListener("click", async function() 
     if (res.status === "expired")       throw new Error("Quiz deadline has passed.");
     if (res.status === "wrongPassword") throw new Error("Incorrect password. Please try again.");
     if (res.status !== "ok")            throw new Error(res.message || "Failed to start");
+
+    // Save name + password for 1 hour
+    localStorage.setItem("dq_creds", JSON.stringify({
+      name: name, password: password, expiry: Date.now() + 3600000
+    }));
 
     state.name      = name;
     state.token     = res.token;
