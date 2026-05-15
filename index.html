@@ -471,31 +471,45 @@ function stopTimer() {
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 }
 
-function startTimer(seconds) {
+// Resume or start timer for question index qi
+function resumeTimer(qi) {
   stopTimer();
+  const q  = state.questions[qi];
   const el = document.getElementById("q-timer");
-  let remaining = seconds;
+
+  // Use saved remaining time, or full time if first visit
+  if (state.timers[qi] === undefined) state.timers[qi] = q.time || 30;
 
   function tick() {
-    el.textContent = remaining + "s";
+    const rem = state.timers[qi];
+    el.textContent = rem + "s";
     el.className = "timer" +
-      (remaining <= 5 ? " urgent" : remaining <= 10 ? " warn" : "");
-    if (remaining <= 0) {
+      (rem <= 5 ? " urgent" : rem <= 10 ? " warn" : "");
+    if (rem <= 0) {
       stopTimer();
-      // auto-advance: skip if unanswered, next question
-      const i = state.current;
-      const isLast = i === state.questions.length - 1;
+      const isLast = qi === state.questions.length - 1;
       if (isLast) {
         document.getElementById("btn-next").click();
       } else {
         state.current++;
         renderQuestion();
       }
+      return;
     }
-    remaining--;
+    state.timers[qi]--;
   }
   tick();
   timerInterval = setInterval(tick, 1000);
+}
+
+// Only update the selected state of options — does NOT restart timer
+function updateOptionStyles() {
+  const i = state.current;
+  document.querySelectorAll("#q-options .option").forEach(function(div, idx) {
+    div.className = "option" + (state.responses[i] === idx ? " selected" : "");
+    div.querySelector(".option-letter").className =
+      "option-letter" + (state.responses[i] === idx ? "" : "");
+  });
 }
 
 function renderQuestion() {
@@ -518,7 +532,7 @@ function renderQuestion() {
       '<span>' + esc(opt) + '</span>';
     div.addEventListener("click", function() {
       state.responses[i] = idx;
-      renderQuestion();
+      updateOptionStyles();   // just update visuals, timer keeps running
     });
     opts.appendChild(div);
   });
@@ -527,8 +541,7 @@ function renderQuestion() {
   const isLast = i === total - 1;
   document.getElementById("btn-next").textContent = isLast ? "Submit" : "Next →";
 
-  // start per-question countdown
-  startTimer(q.time || 30);
+  resumeTimer(i);   // resume saved time for this question
 }
 
 document.getElementById("btn-prev").addEventListener("click", function() {
