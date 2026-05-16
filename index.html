@@ -452,6 +452,7 @@ document.getElementById("btn-start").addEventListener("click", async function() 
     state.token     = res.token;
     state.questions = res.questions;
     state.responses = new Array(res.questions.length).fill(-1);
+   state.timers    = new Array(res.questions.length).fill(undefined);
     state.current   = 0;
 
     renderQuestion();
@@ -555,7 +556,7 @@ async function submitQuiz() {
   if (unanswered > 0) {
     if (!confirm(unanswered + " question(s) unanswered. Submit anyway?")) {
       // restart timer for current question if user cancels
-      startTimer(state.questions[state.current].time || 30);
+      resumeTimer(state.current);
       return false;
     }
   }
