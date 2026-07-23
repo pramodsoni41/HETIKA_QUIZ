@@ -3,7 +3,10 @@
  * Sheet naming: Q_<class>_<subject>_<topic>
  *   e.g. Q_6_Math_Fractions, Q_7_Science_Living_Things
  * Config sheet: key-value pairs (col A = key, col B = value)
- * Columns in question sheets: Question | A | B | C | D | CorrectAnswer
+ * Columns in question sheets: Question | A | B | C | D | CorrectAnswer | Time | Picked
+ *   "Picked" (col H) is auto-incremented each time a question is served.
+ *   Least-picked questions are always chosen first, so questions don't
+ *   repeat until the whole tab has been cycled through.
  */
 
 const DQ_SS_ID = "1rsCpxqaKIgtN2W5j4HniCbuQJhBWY2Dkw3ArYj_jeP8";
@@ -136,14 +139,35 @@ function handleStartQuiz_(ss, data) {
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return json({ status: "error", message: "No questions in sheet" });
 
-  let rows = sheet.getRange(2, 1, lastRow - 1, 7).getValues()
-    .filter(function(r) { return String(r[0] || "").trim() !== ""; });
+  // Read 8 columns: Question | A | B | C | D | Correct | Time | Picked
+  let items = sheet.getRange(2, 1, lastRow - 1, 8).getValues()
+    .map(function(r, idx) {
+      return { row: r, sheetRow: idx + 2, picked: toNum_(r[7], 0) };
+    })
+    .filter(function(it) { return String(it.row[0] || "").trim() !== ""; });
 
-  if (rows.length === 0) return json({ status: "error", message: "No valid questions" });
+  if (items.length === 0) return json({ status: "error", message: "No valid questions" });
 
-  // Shuffle questions
-  if (config.shuffleQuestions) rows = shuffle_(rows);
-  rows = rows.slice(0, Math.min(count, rows.length));
+  // Prefer least-picked questions: shuffle first (random tie-break),
+  // then stable-sort by pick count so unpicked questions come first.
+  items = shuffle_(items).sort(function(a, b) { return a.picked - b.picked; });
+  items = items.slice(0, Math.min(count, items.length));
+
+  // Mark the chosen questions as picked (increment col H)
+  try {
+    items.forEach(function(it) {
+      sheet.getRange(it.sheetRow, 8).setValue(it.picked + 1);
+    });
+  } catch (markErr) {
+    Logger.log("Pick-count write error: " + markErr.message);
+  }
+
+  // If shuffling is off, keep sheet order; otherwise keep the random order
+  if (!config.shuffleQuestions) {
+    items.sort(function(a, b) { return a.sheetRow - b.sheetRow; });
+  }
+
+  const rows = items.map(function(it) { return it.row; });
 
   const letters = ["A", "B", "C", "D"];
   const sessionAnswers = [];
